@@ -1,15 +1,13 @@
-
-
-.App {
+.Portfolio {
   text-align: center;
 }
 
-.App-logo {
+.Portfolio-logo {
   height: 20vmin;
   pointer-events: none;
 }
 
-.App-interface {
+.Portfolio-interface {
   background-color: #f2f0f0;
   min-height: 20vh;
   display: flex;
@@ -20,11 +18,57 @@
   color: #000000;
 }
 
-.App-Name {
+.Portfolio-App-Name {
   font-family: 'Fredoka One', cursive;
   font-size: calc(13px + 2vmin);
 }
-.Tabs {
+.Portfolio-Tabs {
   align-items: center;
 }
 
+.login-logo {
+  position: relative;
+  left: 31pc;
+  width: 30vmin;
+  height: 30vmin;
+ }
+
+.login-input-text {
+  display: inline;
+  position: relative;
+  left: 34pc;
+  border: solid;
+  border-radius: 0.4rem;
+  border-style: solid;
+  border-width: 1px;
+  padding: 10px;
+}
+
+.login-button {
+  position: relative;
+  color: #fff !important;
+  width: 10pc;
+  text-transform: uppercase;
+  text-decoration: none;
+  position: relative;
+  left: 34pc;
+  background: #1b2122;
+  margin: 20px;
+  padding: 10px;
+  border-radius: 0.4rem;
+  display: inline-block;
+}
+
+.login-app-name {
+  position: relative;
+  left: 32pc;
+  color:initial;
+  font-family: 'Fredoka One', cursive;
+  font-size: calc(13px + 4vmin);
+}
+
+.container {
+  color: #fff;
+  max-width: 500px;
+  margin: auto;
+}
