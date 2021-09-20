@@ -140,7 +140,7 @@ function Portfolio() {
   // the rowIndex, columnId and new value to update the
   // original data
   const addRow = (index) => {
-    if (data.length == index+1){
+    if (data.length === index+1){
       const updatedRows = [...data, defaultRow]
       setData(updatedRows)
     }
