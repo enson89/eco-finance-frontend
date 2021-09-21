@@ -2,6 +2,11 @@ import './App.css';
 import HorizontalTabs from './ControlledTabs.js';
 import logo from './logo.svg';
 
+function logout (e) {
+  //Back to Login Page
+  window.location = "/App"
+}
+
 function PortfolioApp() {
   return (
     <div className="Portfolio">
@@ -11,6 +16,9 @@ function PortfolioApp() {
         <div>
           <HorizontalTabs />
         </div>
+        <button className="login-button" onClick={logout}>
+          Logout
+        </button>
       </header>
     </div>
   );
