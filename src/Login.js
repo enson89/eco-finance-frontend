@@ -1,17 +1,11 @@
 import React from "react";
 import logo from "./logo.svg"
 import "./App.css";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
 
 class Login extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {email: '', password: ''};
+    this.state = {username: "", password: ""};
     this.emailChange = this.emailChange.bind(this)
     this.passwordChange = this.passwordChange.bind(this)
     this.loginCheck = this.loginCheck.bind(this)
@@ -19,7 +13,7 @@ class Login extends React.Component {
 
   emailChange (e) {
     const temp = {...this.state}
-    temp.email = e.target.value
+    temp.username = e.target.value
     this.setState(temp)
   }
 
@@ -29,13 +23,15 @@ class Login extends React.Component {
     this.setState(temp)
   }
 
-  loginCheck (e) {
-    //username field
-    console.log(this.state.email)
-    //password field
-    console.log(this.state.password)
-    //Add login authentication as fit
-    window.location = "/App/Portfolio"
+  async loginCheck (e) {
+    //user and pw data
+    fetch('https://eco-finance-backend.herokuapp.com/api/login', {
+      method: 'POST',
+      headers: {"Content-Type" :'application/json'},
+      body: JSON.stringify({...this.state})
+    })
+    .then(response => response.status === 200 ? 
+      window.location = "/App/Portfolio" : console.log('Invalid Credentials'))
   }
 
   render() {
@@ -54,7 +50,7 @@ class Login extends React.Component {
           <br/>
           <br/>
           <input
-            type="text"
+            type="password"
             className="login-input-text"
             placeholder="Password"
             onBlur={this.passwordChange}
