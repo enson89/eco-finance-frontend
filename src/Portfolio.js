@@ -4,13 +4,33 @@ import { useTable } from 'react-table'
 
 const getPrice = (value) => {
   //Placeholder for price check with Api call
-  return ("Sam")
+  return ("Ple")
 }
 
-const getRating = (value) => {
+const getRating = async (value) => {
   //Placeholder for database check 
   //If database check returns negative, call api and record in database
-  return ("Ple")
+  return fetch(`https://esg-environmental-social-governance-data.p.rapidapi.com/search?q=${value}`, {
+    "method": "GET",
+    "headers": {
+      "x-rapidapi-host": "esg-environmental-social-governance-data.p.rapidapi.com",
+      "x-rapidapi-key": "f2becbb63fmsh07d43de21d4e2d8p113d6cjsnb625557781c2"
+	  }
+  })
+  
+  .then(response => response.json())
+  .then(data => {
+    console.log(data)
+    if (data.length !== 1){
+      return ("Null")
+    }
+    else {
+      return (data[0].total_grade)
+    }
+  })
+  .catch(err => {
+    console.error(err);
+  });  
 }
 
 // Create an editable cell renderer
@@ -28,11 +48,13 @@ const EditableCell = ({
     setValue(e.target.value)
   }
 
-  const onBlur = (e) => {
+  const onBlur = async (e) => {
     if(!!e.target.value){
       setValue(e.target.value)
       addRow(index)
-      updateMyData(index, value)
+      let price = await getPrice(e.target.value)
+      let rating = await getRating(e.target.value)
+      updateMyData(index, e.target.value, price, rating)
     }
     else {return}
   }
@@ -146,23 +168,21 @@ function Portfolio() {
     }
   }
 
-  const updateMyData = (rowIndex, value) => {
-    // We also turn on the flag to not reset the page
+  const updateMyData = (rowIndex, value, price, rating) => {
     setData(old =>
       old.map((row, index) => {
         if (index === rowIndex) {
           return {
             ...old[rowIndex],
             ['ticker']: value,
-            ['stockPrice']: getPrice(value),
-            ['stockRating']: getRating(value),
+            ['stockPrice']: price,
+            ['stockRating']: rating,
           }
         }
         return row
       })
     )
   }
-
 
   return (
     <Table
