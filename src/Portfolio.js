@@ -2,36 +2,54 @@ import React from 'react'
 import { useTable } from 'react-table'
 
 
-const getPrice = (value) => {
-  //Placeholder for price check with Api call
-  return ("Ple")
-}
+// const getPrice = (value) => {
+//   //Placeholder for price check with Api call
+//   return ("Ple")
+// }
 
 const getRating = async (value) => { 
   //DATABASE CHECK FOR TICKER
+  const response = await fetch (`https://eco-finance-backend.herokuapp.com/api/esg?tickerId=${value}`, {
+    "method" : "GET"
+  })
+  const output = response.status === 200 ? response.json() : 'false'
+  if (await output === 'false'){
   //IF PRESENT, RETURN VALUE
   //IF ABSENT, API CALL AND RECORD ENTRY IN DATABASE
-  return fetch(`https://esg-environmental-social-governance-data.p.rapidapi.com/search?q=${value}`, {
-      "method": "GET",
-      "headers": {
-        "x-rapidapi-host": "esg-environmental-social-governance-data.p.rapidapi.com",
-        "x-rapidapi-key": "f2becbb63fmsh07d43de21d4e2d8p113d6cjsnb625557781c2"
-      }
-    })
+    const rating = await fetch(`https://esg-environmental-social-governance-data.p.rapidapi.com/search?q=${value}`, {
+        "method": "GET",
+        "headers": {
+          "x-rapidapi-host": "esg-environmental-social-governance-data.p.rapidapi.com",
+          "x-rapidapi-key": "f2becbb63fmsh07d43de21d4e2d8p113d6cjsnb625557781c2"
+        }
+      })
 
-    .then(response => response.json())
-    .then(data => {
-      if (data.length !== 1){
-        return ("Null")
-      }
-      else {
-        return (data[0].total_grade)
-        //Record in database
-      }
-    })
-    .catch(err => {
-      console.error(err);
-    });
+      .then(response => response.json())
+      .then(data => {
+        if (data.length !== 1){
+          return ("Null")
+        }
+        else {
+          return (data[0].total_grade)
+          //Record in database
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      });
+
+      fetch('https://eco-finance-backend.herokuapp.com/api/esg', {
+        method: 'POST',
+        headers: {"Content-Type" :'application/json'},
+        body: JSON.stringify({tickerId : value, esgRating : rating})
+      })
+
+      return rating
+  }
+  else {
+    let rating = await output
+    return rating[0].ESG_rating
+  }
 }
 
 // Create an editable cell renderer
@@ -53,9 +71,9 @@ const EditableCell = ({
     if(!!e.target.value){
       setValue(e.target.value)
       addRow(index)
-      let price = await getPrice(e.target.value)
+      //let price = await getPrice(e.target.value)
       let rating = await getRating(e.target.value)
-      updateMyData(index, e.target.value, price, rating)
+      updateMyData(index, e.target.value, rating)
     }
     else {return}
   }
@@ -149,11 +167,11 @@ function Portfolio() {
         accessor: 'ticker',
         Cell: EditableCell
       },
-      {
-        Header: 'Price',
-        accessor: 'stockPrice',
-        Cell: IneditableCell
-      },
+      // {
+      //   Header: 'Price',
+      //   accessor: 'stockPrice',
+      //   Cell: IneditableCell
+      // },
       {
         Header: 'ESG Rating',
         accessor: 'stockRating',
@@ -170,7 +188,7 @@ function Portfolio() {
 
   const [data, setData] = React.useState(React.useMemo(
     () => [
-      { ticker: 'Enter', stockPrice: "Null", stockRating: "Null", delete: 'x'}
+      { ticker: 'Enter', stockRating: "Null", delete: 'x'}
     ], []))
   const [defaultRow] = React.useState(data)
 
@@ -187,14 +205,14 @@ function Portfolio() {
     }
   }
 
-  const updateMyData = (rowIndex, value, price, rating) => {
+  const updateMyData = (rowIndex, value, rating) => {
     setData(old =>
       old.map((row, index) => {
         if (index === rowIndex) {
           return {
             ...old[rowIndex],
             ['ticker']: value,
-            ['stockPrice']: price,
+         //   ['stockPrice']: price,
             ['stockRating']: rating,
           }
         }
