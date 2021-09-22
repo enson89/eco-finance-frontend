@@ -4,7 +4,7 @@
 name: Node.js CI
 
 env:
-
+  
 
 on:
   push:
@@ -30,5 +30,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: CI=false npm run build --if-present
+    - run: npm run build --if-present
+      env:
+        CI: false
     - run: npm test
