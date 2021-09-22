@@ -7,30 +7,31 @@ const getPrice = (value) => {
   return ("Ple")
 }
 
-const getRating = async (value) => {
-  //Placeholder for database check 
-  //If database check returns negative, call api and record in database
+const getRating = async (value) => { 
+  //DATABASE CHECK FOR TICKER
+  //IF PRESENT, RETURN VALUE
+  //IF ABSENT, API CALL AND RECORD ENTRY IN DATABASE
   return fetch(`https://esg-environmental-social-governance-data.p.rapidapi.com/search?q=${value}`, {
-    "method": "GET",
-    "headers": {
-      "x-rapidapi-host": "esg-environmental-social-governance-data.p.rapidapi.com",
-      "x-rapidapi-key": "f2becbb63fmsh07d43de21d4e2d8p113d6cjsnb625557781c2"
-	  }
-  })
-  
-  .then(response => response.json())
-  .then(data => {
-    console.log(data)
-    if (data.length !== 1){
-      return ("Null")
-    }
-    else {
-      return (data[0].total_grade)
-    }
-  })
-  .catch(err => {
-    console.error(err);
-  });  
+      "method": "GET",
+      "headers": {
+        "x-rapidapi-host": "esg-environmental-social-governance-data.p.rapidapi.com",
+        "x-rapidapi-key": "f2becbb63fmsh07d43de21d4e2d8p113d6cjsnb625557781c2"
+      }
+    })
+
+    .then(response => response.json())
+    .then(data => {
+      if (data.length !== 1){
+        return ("Null")
+      }
+      else {
+        return (data[0].total_grade)
+        //Record in database
+      }
+    })
+    .catch(err => {
+      console.error(err);
+    });
 }
 
 // Create an editable cell renderer
@@ -39,7 +40,7 @@ const EditableCell = ({
   row: { index },
   column: { id },
   addRow,
-  updateMyData, 
+  updateMyData
 }) => {
   // We need to keep and update the state of the cell normally
   const [value, setValue] = React.useState(initialValue)
@@ -81,7 +82,19 @@ const IneditableCell = ({
   return <input value={value} readOnly={true} />
 }
 
-function Table({ columns, data, updateMyData, addRow }) {
+const DeleteCell = ({
+  value: initialValue,
+  row: { index },
+  column: { id },
+  delRow,
+}) => {
+  const DeleteRow = (e) => {
+    delRow(index)
+  }
+  return <button onClick={DeleteRow}>x</button>
+}
+
+function Table({ columns, data, updateMyData, addRow, delRow}) {
   const {
     getTableProps,
     getTableBodyProps,
@@ -93,7 +106,8 @@ function Table({ columns, data, updateMyData, addRow }) {
       columns,
       data,
       updateMyData,
-      addRow
+      addRow,
+      delRow
     }
   )
 
@@ -144,14 +158,19 @@ function Portfolio() {
         Header: 'ESG Rating',
         accessor: 'stockRating',
         Cell: IneditableCell
-      }
+      },
+      {
+        Header: '',
+        accessor: 'delete',
+        Cell: DeleteCell
+      },
     ],
     []
   )
 
   const [data, setData] = React.useState(React.useMemo(
     () => [
-      { ticker: 'Enter', stockPrice: "Null", stockRating: "Null" }
+      { ticker: 'Enter', stockPrice: "Null", stockRating: "Null", delete: 'x'}
     ], []))
   const [defaultRow] = React.useState(data)
 
@@ -163,7 +182,7 @@ function Portfolio() {
   // original data
   const addRow = (index) => {
     if (data.length === index+1){
-      const updatedRows = [...data, defaultRow]
+      const updatedRows = [...data, ...defaultRow]
       setData(updatedRows)
     }
   }
@@ -184,12 +203,25 @@ function Portfolio() {
     )
   }
 
+  const delRow = (rowIndex) => {
+    if (data.length ===1) {console.log('Error, Last Row')}
+    else { 
+      let temp = [...data]
+      console.log(temp)
+      temp.splice(rowIndex,1)
+      console.log(temp)
+      setData(temp)
+    }
+  }
+
+
   return (
     <Table
       columns={columns}
       data={data}
       updateMyData={updateMyData}
       addRow={addRow}
+      delRow={delRow}
     />
   )
 }
