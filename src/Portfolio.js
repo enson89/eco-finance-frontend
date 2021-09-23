@@ -20,7 +20,7 @@ const getRating = async (value) => {
         "method": "GET",
         "headers": {
           "x-rapidapi-host": "esg-environmental-social-governance-data.p.rapidapi.com",
-          "x-rapidapi-key":  x-rapidapi-key: process.env.x-rapidapi-key
+          "x-rapidapi-key": process.env.x-rapidapi-key
         }
       })
 
