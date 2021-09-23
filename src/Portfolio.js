@@ -31,7 +31,6 @@ const getRating = async (value) => {
         }
         else {
           return (data[0].total_grade)
-          //Record in database
         }
       })
       .catch(err => {
@@ -48,7 +47,7 @@ const getRating = async (value) => {
   }
   else {
     let rating = await output
-    return rating[0].ESG_rating
+    return rating[0].rating
   }
 }
 
@@ -188,7 +187,7 @@ function Portfolio() {
 
   const [data, setData] = React.useState(React.useMemo(
     () => [
-      { ticker: 'Enter', stockRating: "Null", delete: 'x'}
+      { ticker: '', stockRating: "Null", delete: 'x'}
     ], []))
   const [defaultRow] = React.useState(data)
 
