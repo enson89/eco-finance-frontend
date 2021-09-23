@@ -9,8 +9,9 @@ class Login extends React.Component {
     this.emailChange = this.emailChange.bind(this)
     this.passwordChange = this.passwordChange.bind(this)
     this.loginCheck = this.loginCheck.bind(this)
+    this.storeuser = this.storeuser.bind(this)
+    this.clickfunctions = this.clickfunctions.bind(this)
   }
-
   emailChange (e) {
     const temp = {...this.state}
     temp.username = e.target.value
@@ -25,20 +26,36 @@ class Login extends React.Component {
 
   async loginCheck (e) {
     //user and pw data
-    fetch('https://eco-finance-backend.herokuapp.com/api/login', {
+    let output = await fetch('https://eco-finance-backend.herokuapp.com/api/login', {
       method: 'POST',
       headers: {"Content-Type" :'application/json'},
       body: JSON.stringify({...this.state})
     })
-    .then(response => response.status === 200 ? 
-      window.location = "/App/Portfolio" : console.log('Invalid Credentials'))
+    .then((response) => {
+      if (response.status === 200) {   
+      window.user = response.json()}
+      return response})
+    console.log(await window.user)
+
+    if (output.status === 200){
+      window.location = 'App/Portfolio'
+    }
+  }
+  storeuser (e) {
+    localStorage.setItem('user',JSON.stringify({...this.state}))
+    console.log(localStorage.getItem('user'))
+  }
+
+  clickfunctions (e) {
+    this.storeuser(e)
+    this.loginCheck(e)
   }
 
   render() {
     return (
         <div className="container">
           <h1 className="login-app-name">Ecofinance</h1>
-          <br/>  
+          <br/>
           <img src={logo} alt="brand logo" className="login-logo"/>
           <br/>
           <input
@@ -58,7 +75,7 @@ class Login extends React.Component {
           <br/>
           <button
             className="login-button"
-            onClick={this.loginCheck}
+            onClick={this.clickfunctions}
           >
           Login
           </button>
