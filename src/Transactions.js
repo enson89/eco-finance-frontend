@@ -15,7 +15,7 @@ const IneditableCell = ({
   return <input value={value} readOnly={true} />
 }
 
-function Table({ columns, data}) {
+function Table({ columns, data, UserData, retrieveid, populateTransactions}) {
   const {
     getTableProps,
     getTableBodyProps,
@@ -26,7 +26,9 @@ function Table({ columns, data}) {
     {
       columns,
       data,
-  //    UserData
+      UserData,
+      retrieveid,
+      populateTransactions
     }
   )
 
@@ -65,17 +67,17 @@ function Transactions() {
     () => [
       {
         Header: 'Ticker',
-        accessor: 'ticker',
+        accessor: 'tickerId',
         Cell: IneditableCell
       },
-      {
-        Header: 'Type',
-        accessor: 'transType',
-        Cell: IneditableCell
-      },
+      // {
+      //   Header: 'Type',
+      //   accessor: 'transType',
+      //   Cell: IneditableCell
+      // },
       {
         Header: 'Quantity',
-        accessor: 'quantity',
+        accessor: 'amount',
         Cell: IneditableCell
       },
     ],
@@ -84,34 +86,44 @@ function Transactions() {
 
   const [data,setData] = React.useState(React.useMemo(
     () => [
-      {ticker : 'AABB', transType: 'Buy', quantity: '2000'}
+      {tickerId : 'AABB', amount: '2000'}
     ],[]))
 
-  // const UserData = async (id) => {
-  //  const transacdata = await fetch(``, {
-  //    "method":"GET"
-  //  }
-  //  .then(response => response.json)
-  //   const [data,setData] = React.useState(React.useMemo(
-  //     () => [
-  //       {ticker : 'AABB', transType: 'Buy', quantity: '2000'}
-  //     ],[]))
-  // }
+  populateTransactions()
+  
+  async function populateTransactions () {
+    let userid = await retrieveid()
+    let transdata = await UserData(userid)
+    console.log(transdata)
+  }
 
-  // async function retrieveid () {
-  //   return await fetch('https://eco-finance-backend.herokuapp.com/api/login', {
-  //     method: 'POST',
-  //     headers: {"Content-Type" :'application/json'},
-  //     body: localStorage.getItem('user')
-  //   })
-  //   .then((response) => response.json().userId)
-  // }
+  async function UserData(id) {
+    return await fetch(`https://eco-finance-backend.herokuapp.com/api/txn?userId=${id}`, {
+      "method" : "GET",
+      headers: {"Content-Type" :'application/json'}
+    })
+    .then(response => response.json())
+  }
+
+  async function retrieveid () {
+    return await fetch('https://eco-finance-backend.herokuapp.com/api/login', {
+      method: 'POST',
+      headers: {"Content-Type" :'application/json'},
+      body: localStorage.getItem('user')
+    })
+    .then((response) => response.json())
+    .then(data => data.userId)
+  }
+
+  
 
   return (
     <Table
       columns={columns}
       data={data}
-    //  UserData={UserData}
+      UserData={UserData}
+      retrieveid={retrieveid}
+      populateTransactions={populateTransactions}
     />
   )
 }
