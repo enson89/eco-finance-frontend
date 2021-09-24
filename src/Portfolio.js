@@ -19,8 +19,8 @@ const getRating = async (value) => {
     const rating = await fetch(`https://esg-environmental-social-governance-data.p.rapidapi.com/search?q=${value}`, {
         "method": "GET",
         "headers": {
-          "x-rapidapi-host": "esg-environmental-social-governance-data.p.rapidapi.com",
-          "x-rapidapi-key": process.env.x-rapidapi-key
+          "x-rapidapi-host": process.env.RAPIDAPIHOST,
+          "x-rapidapi-key": process.env.RAPIDAPIKEY
         }
       })
 
